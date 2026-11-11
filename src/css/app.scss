@@ -1,0 +1,32 @@
+body {
+  background: #f4f7fa;
+}
+
+.portal-header {
+  background: #01aef2;
+  color: #000;
+}
+
+.sistema-card {
+  height: 100%;
+  border-radius: 12px;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+a.sistema-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.sistema-card:hover,
+a.sistema-card:focus-visible {
+  box-shadow: 0 6px 18px rgba(0, 65, 115, 0.22);
+  transform: translateY(-2px);
+}
+
+.sistema-card--disabled {
+  opacity: 0.6;
+}
