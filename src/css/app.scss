@@ -47,21 +47,34 @@ body {
   outline-color: #fff;
 }
 
+// Brand, user card, thin nav and red logout: the layout of the municipal systems (GTSV).
 .portal-drawer__brand {
   gap: 16px;
-  padding: 8px 8px 24px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 8px 16px;
+}
+
+.portal-drawer__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: $radius;
+  background: #fff;
 }
 
 .portal-drawer__title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.15;
+  text-transform: uppercase;
 }
 
 .portal-drawer__subtitle {
+  margin-top: 4px;
   font-size: 12px;
+  font-weight: 400;
   color: rgba(255, 255, 255, 0.85);
 }
 
@@ -76,16 +89,12 @@ body {
   border-radius: $radius;
   color: #fff;
   font-size: 17px;
-  font-weight: 500;
+  font-weight: 400;
 
   .q-item__section--avatar {
     min-width: 0;
     padding-right: 16px;
     color: #fff;
-  }
-
-  .q-icon {
-    font-size: 25px;
   }
 
   &:focus-visible {
@@ -94,10 +103,13 @@ body {
   }
 }
 
+// Thin text on the active item: a light tint of the navy (white text keeps ~8:1 contrast)
+// instead of the `menu-active` fill, which only reaches AA with large bold text.
 .portal-nav .portal-nav__item--active {
-  background: $menu-active;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 3px 0 0 #fff;
   color: #fff;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .portal-nav__count {
@@ -117,32 +129,70 @@ body {
 }
 
 .portal-me {
-  gap: 8px;
-  padding: 0 8px 16px;
-  line-height: 1.35;
-}
-
-.portal-me__avatar {
-  background: #fff;
-  color: $primary;
-  font-size: 12px;
-  font-weight: 700;
-  flex: none;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: $radius;
+  background: rgba(255, 255, 255, 0.12);
+  line-height: 1.3;
 }
 
 .portal-me__text {
+  flex: 1;
   min-width: 0;
 }
 
 .portal-me__name {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
   overflow-wrap: anywhere;
 }
 
-.portal-me__cargo {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.85);
+.portal-me__detail {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  overflow-wrap: anywhere;
+}
+
+// White on `secondary` is 3.3:1: only large bold text (initials) goes on it.
+.portal-me__avatar {
+  flex: none;
+  background: $secondary;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.portal-logout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: $radius;
+  background: $negative;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
 }
 
 // ---------- Pages ----------

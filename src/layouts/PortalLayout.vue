@@ -10,12 +10,13 @@
           flat
           round
           dense
-          icon="mdi-menu"
           aria-label="Abrir menú"
           :aria-expanded="drawerOpen ? 'true' : 'false'"
           aria-controls="portal-drawer"
           @click="drawerOpen = !drawerOpen"
-        />
+        >
+          <LineIcon name="menu" />
+        </q-btn>
         <PortalShield width="24" height="28" class="q-ml-sm" />
         <q-toolbar-title class="text-subtitle1 text-weight-bold"
           >Portal de Sistemas</q-toolbar-title
@@ -33,11 +34,24 @@
     >
       <div class="column no-wrap full-height q-pa-md">
         <div class="portal-drawer__brand row no-wrap items-center">
-          <PortalShield />
+          <div class="portal-drawer__logo" aria-hidden="true">
+            <PortalShield width="40" height="46" />
+          </div>
           <div>
-            <div class="portal-drawer__title">Portal de Sistemas</div>
+            <div class="portal-drawer__title">Portal de Sistemas - MPP</div>
             <div class="portal-drawer__subtitle">Municipalidad Provincial de Puno</div>
           </div>
+        </div>
+
+        <div class="portal-me row no-wrap items-center">
+          <div class="portal-me__text">
+            <div class="portal-me__name">{{ name || 'Mi cuenta' }}</div>
+            <div v-if="userDetail" class="portal-me__detail">{{ userDetail }}</div>
+          </div>
+          <q-avatar size="48px" class="portal-me__avatar" aria-hidden="true">
+            <template v-if="userInitials">{{ userInitials }}</template>
+            <LineIcon v-else name="user" />
+          </q-avatar>
         </div>
 
         <nav aria-label="Principal" class="col column no-wrap">
@@ -48,7 +62,7 @@
               active-class="portal-nav__item--active"
               @click="closeOnMobile"
             >
-              <q-item-section avatar><q-icon name="mdi-view-grid-outline" /></q-item-section>
+              <q-item-section avatar><LineIcon name="grid" /></q-item-section>
               <q-item-section>Mis sistemas</q-item-section>
               <q-item-section v-if="portal.sistemasLoaded" side>
                 <span class="portal-nav__count" :aria-label="`${sistemasCount} disponibles`">
@@ -62,28 +76,16 @@
               active-class="portal-nav__item--active"
               @click="closeOnMobile"
             >
-              <q-item-section avatar><q-icon name="mdi-account-outline" /></q-item-section>
+              <q-item-section avatar><LineIcon name="user" /></q-item-section>
               <q-item-section>Mi perfil</q-item-section>
             </q-item>
           </q-list>
 
           <div class="portal-drawer__bottom">
-            <div class="portal-me row no-wrap items-center">
-              <q-avatar size="32px" class="portal-me__avatar" aria-hidden="true">
-                <template v-if="userInitials">{{ userInitials }}</template>
-                <q-icon v-else name="mdi-account" size="20px" />
-              </q-avatar>
-              <div class="portal-me__text">
-                <div class="portal-me__name">{{ name || 'Mi cuenta' }}</div>
-                <div v-if="cargo" class="portal-me__cargo">{{ cargo }}</div>
-              </div>
-            </div>
-            <q-list class="portal-nav">
-              <q-item clickable class="portal-nav__item" @click="logout">
-                <q-item-section avatar><q-icon name="mdi-logout" /></q-item-section>
-                <q-item-section>Cerrar sesión</q-item-section>
-              </q-item>
-            </q-list>
+            <button type="button" class="portal-logout" @click="logout">
+              <LineIcon name="power" />
+              <span>Cerrar sesión</span>
+            </button>
           </div>
         </nav>
       </div>
@@ -99,6 +101,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { HydraDegradedBanner, HydraSessionGuard, useHydraAuth } from '@munipuno/hydra-auth-vue'
+import LineIcon from 'components/LineIcon.vue'
 import PortalShield from 'components/PortalShield.vue'
 import { usePortalStore } from 'src/stores/portal'
 import { activeTrabajo, displayName, initials, openableCount } from 'src/utils/portal'
@@ -114,6 +117,8 @@ const drawerOpen = ref(false)
 const name = computed(() => displayName(portal.perfil) || auth.name || '')
 const userInitials = computed(() => initials(portal.perfil, auth.name || ''))
 const cargo = computed(() => activeTrabajo(portal.perfil)?.cargo || '')
+// Like GTSV: the email under the name; the cargo when there is no email.
+const userDetail = computed(() => portal.perfil?.user?.email || auth.email || cargo.value)
 const sistemasCount = computed(() => openableCount(portal.sistemas))
 
 function closeOnMobile() {
