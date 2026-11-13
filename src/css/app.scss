@@ -36,7 +36,9 @@ body {
 
 // ---------- Layout: navy drawer ----------
 
-.q-drawer.portal-drawer {
+// QDrawer has inheritAttrs: false and puts `class` on its inner `.q-drawer__content`
+// (which fills the drawer), not on `aside.q-drawer` (white by default).
+.q-drawer__content.portal-drawer {
   background: $primary;
   color: #fff;
 }
