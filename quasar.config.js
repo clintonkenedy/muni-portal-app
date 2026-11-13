@@ -26,7 +26,8 @@ export default defineConfig(() => {
     css: ['app.scss'],
 
     // Sistema icons come from the core as icon names (e.g. `mdi-bus`).
-    extras: ['mdi-v7', 'bootstrap-icons', 'roboto-font', 'material-icons'],
+    // ionicons-v4: `ion-ios-power` on the logout button, as in the GTSV menu.
+    extras: ['mdi-v7', 'bootstrap-icons', 'roboto-font', 'material-icons', 'ionicons-v4'],
 
     build: {
       target: {
