@@ -1,7 +1,7 @@
 <template>
-  <q-page padding>
+  <q-page padding class="portal-page">
     <div class="q-mx-auto" style="max-width: 800px">
-      <h1 class="text-h5 text-weight-bold q-mt-sm q-mb-md">Mi perfil</h1>
+      <h1 class="portal-page__title">Mi perfil</h1>
 
       <q-banner
         v-if="portal.perfilError"
@@ -29,12 +29,32 @@
       </q-card>
 
       <template v-else-if="perfil">
-        <q-card flat bordered class="q-mb-md">
-          <q-card-section class="row items-center q-gutter-md">
-            <q-avatar color="primary" text-color="white" size="56px" icon="mdi-account" />
+        <q-card flat bordered class="q-mb-md perfil-header">
+          <q-card-section class="row no-wrap items-center perfil-header__body">
+            <q-avatar size="64px" class="perfil-header__avatar" aria-hidden="true">
+              <template v-if="avatarInitials">{{ avatarInitials }}</template>
+              <q-icon v-else name="mdi-account" />
+            </q-avatar>
             <div class="col">
-              <div class="text-h6">{{ displayName(perfil) }}</div>
-              <div class="text-body2 text-grey-8">DNI {{ perfil.user?.dni }}</div>
+              <h2 class="perfil-header__name">{{ displayName(perfil) }}</h2>
+              <dl class="perfil-header__facts">
+                <div v-if="trabajo?.cargo">
+                  <dt><q-icon name="mdi-briefcase-outline" /><span class="sr-only">Cargo</span></dt>
+                  <dd>{{ trabajo.cargo }}</dd>
+                </div>
+                <div v-if="trabajo?.sede">
+                  <dt><q-icon name="mdi-map-marker-outline" /><span class="sr-only">Sede</span></dt>
+                  <dd>{{ trabajo.sede }}</dd>
+                </div>
+                <div>
+                  <dt>
+                    <q-icon name="mdi-card-account-details-outline" /><span class="sr-only"
+                      >Documento</span
+                    >
+                  </dt>
+                  <dd>DNI {{ perfil.user?.dni }}</dd>
+                </div>
+              </dl>
             </div>
             <q-chip
               dense
@@ -47,7 +67,7 @@
         </q-card>
 
         <q-card flat bordered class="q-mb-md">
-          <q-card-section class="text-subtitle1 text-weight-bold q-pb-none">Cuenta</q-card-section>
+          <q-card-section class="perfil-section__title q-pb-none">Cuenta</q-card-section>
           <q-list>
             <PerfilDato label="Usuario" :value="perfil.user?.name" />
             <PerfilDato label="Correo" :value="perfil.user?.email" />
@@ -55,9 +75,7 @@
         </q-card>
 
         <q-card flat bordered class="q-mb-md">
-          <q-card-section class="text-subtitle1 text-weight-bold q-pb-none"
-            >Datos personales</q-card-section
-          >
+          <q-card-section class="perfil-section__title q-pb-none">Datos personales</q-card-section>
           <q-list v-if="perfil.persona">
             <PerfilDato label="Nombres" :value="perfil.persona.nombres" />
             <PerfilDato label="Apellido paterno" :value="perfil.persona.apellido_paterno" />
@@ -75,7 +93,7 @@
         </q-card>
 
         <q-card flat bordered>
-          <q-card-section class="text-subtitle1 text-weight-bold q-pb-none">Puesto</q-card-section>
+          <q-card-section class="perfil-section__title q-pb-none">Puesto</q-card-section>
           <q-list v-if="perfil.trabajos.length" separator>
             <q-item v-for="(trabajo, index) in perfil.trabajos" :key="index">
               <q-item-section avatar
@@ -106,10 +124,12 @@
 import { computed, onMounted } from 'vue'
 import PerfilDato from 'components/PerfilDato.vue'
 import { usePortalStore } from 'src/stores/portal'
-import { displayName, formatFecha } from 'src/utils/portal'
+import { activeTrabajo, displayName, formatFecha, initials } from 'src/utils/portal'
 
 const portal = usePortalStore()
 const perfil = computed(() => portal.perfil)
+const trabajo = computed(() => activeTrabajo(portal.perfil))
+const avatarInitials = computed(() => initials(portal.perfil))
 
 // Always refresh: the layout may have loaded it a while ago.
 onMounted(() => portal.loadPerfil())

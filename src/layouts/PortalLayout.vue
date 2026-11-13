@@ -1,52 +1,93 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="lHh LpR lFf">
     <HydraDegradedBanner />
     <HydraSessionGuard />
 
-    <q-header elevated class="portal-header" height-hint="98">
+    <!-- Phones and tablets: slim navy bar that opens the drawer as an overlay. -->
+    <q-header v-if="$q.screen.lt.md" class="bg-primary text-white portal-topbar">
       <q-toolbar>
-        <q-avatar rounded size="40px" class="q-mr-sm">
-          <img src="/icons/favicon-128x128.png" alt="Municipalidad de Puno" />
-        </q-avatar>
-        <q-toolbar-title class="text-weight-bold">
-          {{ $q.screen.lt.sm ? 'Portal' : 'Portal de Sistemas' }}
-        </q-toolbar-title>
-
         <q-btn
           flat
-          no-caps
-          round-dense
-          icon="mdi-account-circle"
-          :label="userLabel"
-          aria-label="Mi cuenta"
+          round
+          dense
+          icon="mdi-menu"
+          aria-label="Abrir menú"
+          :aria-expanded="drawerOpen ? 'true' : 'false'"
+          aria-controls="portal-drawer"
+          @click="drawerOpen = !drawerOpen"
+        />
+        <PortalShield width="24" height="28" class="q-ml-sm" />
+        <q-toolbar-title class="text-subtitle1 text-weight-bold"
+          >Portal de Sistemas</q-toolbar-title
         >
-          <q-menu anchor="bottom right" self="top right">
-            <q-list style="min-width: 220px">
-              <q-item>
-                <q-item-section>
-                  <q-item-label class="text-weight-medium">{{ name || 'Mi cuenta' }}</q-item-label>
-                  <q-item-label v-if="dni" caption>DNI {{ dni }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-separator />
-              <q-item clickable v-close-popup to="/perfil">
-                <q-item-section avatar><q-icon name="mdi-account-outline" /></q-item-section>
-                <q-item-section>Mi perfil</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup @click="logout">
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer
+      id="portal-drawer"
+      v-model="drawerOpen"
+      show-if-above
+      :width="280"
+      :breakpoint="1023"
+      class="portal-drawer"
+    >
+      <div class="column no-wrap full-height q-pa-md">
+        <div class="portal-drawer__brand row no-wrap items-center">
+          <PortalShield />
+          <div>
+            <div class="portal-drawer__title">Portal de Sistemas</div>
+            <div class="portal-drawer__subtitle">Municipalidad Provincial de Puno</div>
+          </div>
+        </div>
+
+        <nav aria-label="Principal" class="col column no-wrap">
+          <q-list class="portal-nav">
+            <q-item
+              to="/sistemas"
+              class="portal-nav__item"
+              active-class="portal-nav__item--active"
+              @click="closeOnMobile"
+            >
+              <q-item-section avatar><q-icon name="mdi-view-grid-outline" /></q-item-section>
+              <q-item-section>Mis sistemas</q-item-section>
+              <q-item-section v-if="portal.sistemasLoaded" side>
+                <span class="portal-nav__count" :aria-label="`${sistemasCount} disponibles`">
+                  {{ sistemasCount }}
+                </span>
+              </q-item-section>
+            </q-item>
+            <q-item
+              to="/perfil"
+              class="portal-nav__item"
+              active-class="portal-nav__item--active"
+              @click="closeOnMobile"
+            >
+              <q-item-section avatar><q-icon name="mdi-account-outline" /></q-item-section>
+              <q-item-section>Mi perfil</q-item-section>
+            </q-item>
+          </q-list>
+
+          <div class="portal-drawer__bottom">
+            <div class="portal-me row no-wrap items-center">
+              <q-avatar size="32px" class="portal-me__avatar" aria-hidden="true">
+                <template v-if="userInitials">{{ userInitials }}</template>
+                <q-icon v-else name="mdi-account" size="20px" />
+              </q-avatar>
+              <div class="portal-me__text">
+                <div class="portal-me__name">{{ name || 'Mi cuenta' }}</div>
+                <div v-if="cargo" class="portal-me__cargo">{{ cargo }}</div>
+              </div>
+            </div>
+            <q-list class="portal-nav">
+              <q-item clickable class="portal-nav__item" @click="logout">
                 <q-item-section avatar><q-icon name="mdi-logout" /></q-item-section>
                 <q-item-section>Cerrar sesión</q-item-section>
               </q-item>
             </q-list>
-          </q-menu>
-        </q-btn>
-      </q-toolbar>
-
-      <q-tabs align="left" no-caps indicator-color="primary" active-color="primary">
-        <q-route-tab to="/sistemas" icon="mdi-view-grid-outline" label="Mis sistemas" />
-        <q-route-tab to="/perfil" icon="mdi-account-outline" label="Mi perfil" />
-      </q-tabs>
-    </q-header>
+          </div>
+        </nav>
+      </div>
+    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -55,21 +96,29 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { HydraDegradedBanner, HydraSessionGuard, useHydraAuth } from '@munipuno/hydra-auth-vue'
+import PortalShield from 'components/PortalShield.vue'
 import { usePortalStore } from 'src/stores/portal'
-import { displayName } from 'src/utils/portal'
+import { activeTrabajo, displayName, initials, openableCount } from 'src/utils/portal'
 
 const $q = useQuasar()
 // The Pinia store (plain reactive state), not `useAuth()` (refs).
 const auth = useHydraAuth()
 const portal = usePortalStore()
 
+// `show-if-above` opens it on desktop; on small screens it starts closed.
+const drawerOpen = ref(false)
+
 const name = computed(() => displayName(portal.perfil) || auth.name || '')
-const dni = computed(() => portal.perfil?.user?.dni ?? auth.user?.profile?.sub ?? '')
-// On phones the toolbar only has room for the icon.
-const userLabel = computed(() => ($q.screen.lt.sm ? undefined : name.value || undefined))
+const userInitials = computed(() => initials(portal.perfil, auth.name || ''))
+const cargo = computed(() => activeTrabajo(portal.perfil)?.cargo || '')
+const sistemasCount = computed(() => openableCount(portal.sistemas))
+
+function closeOnMobile() {
+  if ($q.screen.lt.md) drawerOpen.value = false
+}
 
 onMounted(() => {
   if (!portal.perfil && !portal.perfilLoading) portal.loadPerfil()

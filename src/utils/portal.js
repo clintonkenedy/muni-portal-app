@@ -41,3 +41,73 @@ export function loadErrorMessage(error) {
   if (status === 401) return 'Tu sesión venció. Volvé a ingresar.'
   return 'No pudimos cargar la información. Intentá de nuevo en unos minutos.'
 }
+
+/** Lowercase text without accents or surrounding spaces, for searching. */
+export function normalizeText(value) {
+  if (typeof value !== 'string') return ''
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+}
+
+/**
+ * Sistemas whose name, description or role names contain every word of the
+ * query, ignoring case and accents. A blank query keeps the whole list.
+ */
+export function filterSistemas(sistemas, query) {
+  const list = Array.isArray(sistemas) ? sistemas : []
+  const words = normalizeText(query).split(/\s+/).filter(Boolean)
+  if (words.length === 0) return list
+  return list.filter((sistema) => {
+    const haystack = [sistema?.nombre, sistema?.descripcion, ...(sistema?.roles ?? [])]
+      .map(normalizeText)
+      .join(' ')
+    return words.every((word) => haystack.includes(word))
+  })
+}
+
+/** First role of a sistema and how many more it has (`{ first, extra }`). */
+export function rolesSummary(roles) {
+  const list = Array.isArray(roles) ? roles.filter((rol) => typeof rol === 'string' && rol) : []
+  return { first: list[0] ?? null, extra: Math.max(list.length - 1, 0) }
+}
+
+function words(value) {
+  return typeof value === 'string' ? value.trim().split(/\s+/).filter(Boolean) : []
+}
+
+function capitalize(word) {
+  return word ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : ''
+}
+
+/**
+ * Given name used in the greeting: the persona's first `nombres` word, else
+ * the first word of the display name (or `fallbackName`); empty when unknown.
+ */
+export function firstName(perfil, fallbackName = '') {
+  const [nombre] = words(perfil?.persona?.nombres)
+  const [fallback] = words(displayName(perfil) || fallbackName)
+  return capitalize(nombre || fallback || '')
+}
+
+/** Avatar initials: first given name + first surname, else the first two words of the name. */
+export function initials(perfil, fallbackName = '') {
+  const [nombre] = words(perfil?.persona?.nombres)
+  const [apellido] = words(perfil?.persona?.apellido_paterno)
+  const letters =
+    nombre && apellido ? [nombre, apellido] : words(displayName(perfil) || fallbackName).slice(0, 2)
+  return letters.map((word) => word.charAt(0).toUpperCase()).join('')
+}
+
+/** First active trabajo of the profile, or null. */
+export function activeTrabajo(perfil) {
+  const trabajos = Array.isArray(perfil?.trabajos) ? perfil.trabajos : []
+  return trabajos.find((trabajo) => trabajo?.activo) ?? null
+}
+
+/** How many sistemas have a URL the portal can open. */
+export function openableCount(sistemas) {
+  return Array.isArray(sistemas) ? sistemas.filter((s) => safeHttpUrl(s?.url)).length : 0
+}

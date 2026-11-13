@@ -12,6 +12,10 @@ It is a front-end only (Quasar / Vue 3, plain JavaScript). All data comes from t
 | Mi perfil | `/perfil` | `GET /api/me/perfil` |
 | Landing (public, post-logout) | `/` | — |
 
+"Mis sistemas" is a launcher: one tile per sistema, opened in a new tab, with a search over
+name, description and roles (press `/` to focus it). The layout follows the core design system
+(navy side menu, `muni-usuarios/design/system.md`).
+
 Not built yet: change my password, last logins, my sessions (see `muni-infra/BACKLOG.md`, F3).
 
 ## Requirements on the core
