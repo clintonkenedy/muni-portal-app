@@ -10,13 +10,24 @@ It is a front-end only (Quasar / Vue 3, plain JavaScript). All data comes from t
 |------|-------|---------------|
 | Mis sistemas | `/sistemas` | `GET /api/me/sistemas` |
 | Mi perfil | `/perfil` | `GET /api/me/perfil` |
+| Cambiar mi clave | `/clave` | `POST /api/me/password` |
+| Últimos accesos | `/accesos` | `GET /api/me/accesos` |
+| Mis sesiones | `/sesiones` | `GET /api/me/sesiones`, `DELETE /api/me/sesiones` |
 | Landing (public, post-logout) | `/` | — |
 
 "Mis sistemas" is a launcher: one tile per sistema, opened in a new tab, with a search over
 name, description and roles (press `/` to focus it). The layout follows the core design system
 (navy side menu, `muni-usuarios/design/system.md`).
 
-Not built yet: change my password, last logins, my sessions (see `muni-infra/BACKLOG.md`, F3).
+- **Mi perfil** shows the SGD office name of each puesto (`trabajos[].oficina`) when the core
+  has it.
+- **Cambiar mi clave** checks the form before sending (every field required, new password of
+  at least 8 characters, both new passwords equal) and shows the core's field errors under the
+  fields. Sessions stay open after the change.
+- **Últimos accesos** lists the latest sign-in attempts (date, sistema, IP, browser/OS, success
+  or failure) recorded by the IdP.
+- **Mis sesiones** lists the sistemas with an open session. "Cerrar todas las sesiones" closes
+  them all, including the portal's own session, and lands on `/`.
 
 ## Requirements on the core
 

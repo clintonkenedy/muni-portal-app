@@ -1,5 +1,11 @@
 import { defineStore } from 'pinia'
-import { fetchMiPerfil, fetchMisSistemas } from 'src/services/me'
+import {
+  closeAllMySesiones,
+  fetchMiPerfil,
+  fetchMisAccesos,
+  fetchMisSesiones,
+  fetchMisSistemas,
+} from 'src/services/me'
 import { loadErrorMessage } from 'src/utils/portal'
 
 /**
@@ -15,6 +21,16 @@ export const usePortalStore = defineStore('portal', {
     perfil: null,
     perfilLoading: false,
     perfilError: null,
+    accesos: [],
+    accesosLoading: false,
+    accesosLoaded: false,
+    accesosError: null,
+    sesiones: [],
+    sesionesLoading: false,
+    sesionesLoaded: false,
+    sesionesError: null,
+    closingSesiones: false,
+    closeSesionesError: null,
   }),
   actions: {
     async loadSistemas() {
@@ -38,6 +54,48 @@ export const usePortalStore = defineStore('portal', {
         this.perfilError = loadErrorMessage(error)
       } finally {
         this.perfilLoading = false
+      }
+    },
+    async loadAccesos() {
+      this.accesosLoading = true
+      this.accesosError = null
+      try {
+        this.accesos = await fetchMisAccesos()
+        this.accesosLoaded = true
+      } catch (error) {
+        this.accesosError = loadErrorMessage(error)
+      } finally {
+        this.accesosLoading = false
+      }
+    },
+    async loadSesiones() {
+      this.sesionesLoading = true
+      this.sesionesError = null
+      try {
+        this.sesiones = await fetchMisSesiones()
+        this.sesionesLoaded = true
+      } catch (error) {
+        this.sesionesError = loadErrorMessage(error)
+      } finally {
+        this.sesionesLoading = false
+      }
+    },
+    /**
+     * "Cerrar todas las sesiones". Resolves true when the core revoked them;
+     * the caller then ends the portal's own session.
+     */
+    async closeAllSesiones() {
+      this.closingSesiones = true
+      this.closeSesionesError = null
+      try {
+        await closeAllMySesiones()
+        return true
+      } catch {
+        this.closeSesionesError =
+          'No pudimos cerrar las sesiones. Intentá de nuevo en unos minutos.'
+        return false
+      } finally {
+        this.closingSesiones = false
       }
     },
     /** Drop everything on logout so the next person never sees stale data. */

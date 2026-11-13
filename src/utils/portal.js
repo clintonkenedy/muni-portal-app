@@ -107,6 +107,11 @@ export function activeTrabajo(perfil) {
   return trabajos.find((trabajo) => trabajo?.activo) ?? null
 }
 
+/** Office (SGD name, when not null) and sede of a trabajo, or "Sin oficina". */
+export function trabajoUbicacion(trabajo) {
+  return [trabajo?.oficina, trabajo?.sede].filter(Boolean).join(' · ') || 'Sin oficina'
+}
+
 /** How many sistemas have a URL the portal can open. */
 export function openableCount(sistemas) {
   return Array.isArray(sistemas) ? sistemas.filter((s) => safeHttpUrl(s?.url)).length : 0

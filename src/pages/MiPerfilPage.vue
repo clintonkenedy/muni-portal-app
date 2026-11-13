@@ -42,6 +42,14 @@
                   <dt><q-icon name="mdi-briefcase-outline" /><span class="sr-only">Cargo</span></dt>
                   <dd>{{ trabajo.cargo }}</dd>
                 </div>
+                <div v-if="trabajo?.oficina">
+                  <dt>
+                    <q-icon name="mdi-office-building-outline" /><span class="sr-only"
+                      >Oficina</span
+                    >
+                  </dt>
+                  <dd>{{ trabajo.oficina }}</dd>
+                </div>
                 <div v-if="trabajo?.sede">
                   <dt><q-icon name="mdi-map-marker-outline" /><span class="sr-only">Sede</span></dt>
                   <dd>{{ trabajo.sede }}</dd>
@@ -102,7 +110,7 @@
               <q-item-section>
                 <q-item-label>{{ trabajo.cargo || 'Sin cargo' }}</q-item-label>
                 <q-item-label caption>
-                  {{ [trabajo.oficina, trabajo.sede].filter(Boolean).join(' · ') || 'Sin oficina' }}
+                  {{ trabajoUbicacion(trabajo) }}
                 </q-item-label>
                 <q-item-label v-if="trabajo.email" caption>{{ trabajo.email }}</q-item-label>
               </q-item-section>
@@ -124,7 +132,13 @@
 import { computed, onMounted } from 'vue'
 import PerfilDato from 'components/PerfilDato.vue'
 import { usePortalStore } from 'src/stores/portal'
-import { activeTrabajo, displayName, formatFecha, initials } from 'src/utils/portal'
+import {
+  activeTrabajo,
+  displayName,
+  formatFecha,
+  initials,
+  trabajoUbicacion,
+} from 'src/utils/portal'
 
 const portal = usePortalStore()
 const perfil = computed(() => portal.perfil)
