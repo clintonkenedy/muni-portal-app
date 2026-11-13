@@ -51,7 +51,7 @@
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-white text-weight-bold text-h6">
-              PORTAL DE SISTEMAS - MPP
+              PORTAL DE SISTEMAS
             </q-item-label>
           </q-item-section>
         </q-item>
