@@ -1,9 +1,10 @@
 # Build stage
 FROM node:22-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
+# Copy the whole project before installing: the postinstall script
+# (`quasar prepare`) needs quasar.config.js, like the core front.
 COPY . .
+RUN npm ci
 # Public build-time settings (see .env.example). Pass them as build args, or
 # provide a .env / .env.prod file in the build context instead.
 ARG API_CORE_URL
