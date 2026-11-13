@@ -55,7 +55,8 @@
               <q-item-label class="text-weight-medium">{{
                 formatFechaHora(acceso.fecha)
               }}</q-item-label>
-              <q-item-label caption>
+              <!-- A long IPv6 address has no break points: let it wrap on narrow screens. -->
+              <q-item-label caption style="overflow-wrap: anywhere">
                 {{ orDash(acceso.sistema) }} · IP {{ orDash(acceso.ip) }}
               </q-item-label>
               <q-item-label caption>
