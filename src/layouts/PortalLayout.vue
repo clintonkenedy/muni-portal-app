@@ -17,7 +17,7 @@
         >
           <LineIcon name="menu" />
         </q-btn>
-        <PortalShield width="24" height="28" class="q-ml-sm" />
+        <img src="/escudo-mpp.jpg" alt="" width="32" height="32" class="portal-topbar__logo q-ml-sm" />
         <q-toolbar-title class="text-subtitle1 text-weight-bold"
           >Portal de Sistemas</q-toolbar-title
         >
@@ -34,9 +34,14 @@
     >
       <div class="column no-wrap full-height q-pa-md">
         <div class="portal-drawer__brand row no-wrap items-center">
-          <div class="portal-drawer__logo" aria-hidden="true">
-            <PortalShield width="40" height="46" />
-          </div>
+          <!-- Same coat of arms as the core and GTSV menus, served locally (public/escudo-mpp.jpg). -->
+          <img
+            src="/escudo-mpp.jpg"
+            alt="Escudo de la Municipalidad Provincial de Puno"
+            width="64"
+            height="64"
+            class="portal-drawer__logo"
+          />
           <div>
             <div class="portal-drawer__title">Portal de Sistemas - MPP</div>
             <div class="portal-drawer__subtitle">Municipalidad Provincial de Puno</div>
@@ -102,7 +107,6 @@ import { computed, onMounted, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { HydraDegradedBanner, HydraSessionGuard, useHydraAuth } from '@munipuno/hydra-auth-vue'
 import LineIcon from 'components/LineIcon.vue'
-import PortalShield from 'components/PortalShield.vue'
 import { usePortalStore } from 'src/stores/portal'
 import { activeTrabajo, displayName, initials, openableCount } from 'src/utils/portal'
 

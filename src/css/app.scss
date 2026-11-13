@@ -54,14 +54,19 @@ body {
 }
 
 .portal-drawer__logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   flex: none;
   width: 64px;
   height: 64px;
   border-radius: $radius;
   background: #fff;
+  object-fit: cover;
+}
+
+.portal-topbar__logo {
+  display: block;
+  border-radius: $radius;
+  object-fit: cover;
 }
 
 .portal-drawer__title {
