@@ -32,6 +32,9 @@ The portal needs a core that has:
 3. **Accesos (clients) → Web**: add a client with
    - redirect URI `https://apps.munipuno.gob.pe/oidc-callback`
    - post-logout redirect URI `https://apps.munipuno.gob.pe/`
+   - allowed CORS origin ("Orígenes permitidos (CORS)") `https://apps.munipuno.gob.pe`. The
+     portal uses `@munipuno/hydra-auth-vue` 0.7.0 with `discovery: false`, so this is all Hydra
+     needs: the origin does not have to be in Hydra's global `HYDRA_CORS_ORIGINS`.
 
    Its client id is `OIDC_CLIENT_ID`.
 4. For every sistema that should appear in "Mis sistemas": set **URL** and **Ícono** (an icon

@@ -12,6 +12,9 @@ export const hydraAuth = createHydraAuth({
   coreApiUrl: process.env.API_CORE_URL,
   // Everything needs a session except routes flagged `meta.public`.
   requireAuthByDefault: true,
+  // No discovery: the browser never asks Hydra for its configuration, so the Web
+  // client's "Orígenes permitidos (CORS)" in the core is enough (no HYDRA_CORS_ORIGINS).
+  discovery: false,
   branding: {
     logo: '/inicio_login.jpg',
     title: 'Portal de Sistemas - Municipalidad de Puno',

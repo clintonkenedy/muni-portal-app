@@ -16,7 +16,7 @@
     "postinstall": "quasar prepare"
   },
   "dependencies": {
-    "@munipuno/hydra-auth-vue": "https://codeload.github.com/clintonkenedy/hydra-auth-vue/tar.gz/refs/tags/v0.6.0",
+    "@munipuno/hydra-auth-vue": "https://codeload.github.com/clintonkenedy/hydra-auth-vue/tar.gz/refs/tags/v0.7.0",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
     "oidc-client-ts": "^3.4.1",
