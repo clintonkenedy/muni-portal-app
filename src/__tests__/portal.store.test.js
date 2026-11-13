@@ -4,9 +4,18 @@ import { createPinia, setActivePinia } from 'pinia'
 vi.mock('src/services/me', () => ({
   fetchMisSistemas: vi.fn(),
   fetchMiPerfil: vi.fn(),
+  fetchMisAccesos: vi.fn(),
+  fetchMisSesiones: vi.fn(),
+  closeAllMySesiones: vi.fn(),
 }))
 
-import { fetchMiPerfil, fetchMisSistemas } from 'src/services/me'
+import {
+  closeAllMySesiones,
+  fetchMiPerfil,
+  fetchMisAccesos,
+  fetchMisSesiones,
+  fetchMisSistemas,
+} from 'src/services/me'
 import { usePortalStore } from 'src/stores/portal'
 
 const SISTEMA = {
@@ -102,5 +111,110 @@ describe('portal store', () => {
     expect(portal.sistemas).toEqual([])
     expect(portal.sistemasLoaded).toBe(false)
     expect(portal.perfil).toBeNull()
+  })
+
+  describe('Últimos accesos', () => {
+    const ACCESO = {
+      fecha: '2026-05-10T15:04:05Z',
+      ip: '10.0.0.1',
+      user_agent: 'Mozilla/5.0',
+      sistema: 'SGP',
+      exitoso: true,
+    }
+
+    it('loads the accesos, and keeps an empty list as loaded (empty state)', async () => {
+      const portal = usePortalStore()
+      fetchMisAccesos.mockResolvedValue([ACCESO])
+      await portal.loadAccesos()
+      expect(portal.accesos).toEqual([ACCESO])
+      expect(portal.accesosLoaded).toBe(true)
+      expect(portal.accesosLoading).toBe(false)
+      expect(portal.accesosError).toBeNull()
+
+      fetchMisAccesos.mockResolvedValue([])
+      await portal.loadAccesos()
+      expect(portal.accesos).toEqual([])
+      expect(portal.accesosLoaded).toBe(true)
+    })
+
+    it('reports a failed load (503) and clears it when a retry succeeds', async () => {
+      const portal = usePortalStore()
+      fetchMisAccesos.mockRejectedValue({
+        response: { status: 503, data: { error: 'idp_unavailable' } },
+      })
+      await portal.loadAccesos()
+      expect(portal.accesosError).toBe(
+        'No pudimos cargar la información. Intentá de nuevo en unos minutos.',
+      )
+      expect(portal.accesosLoaded).toBe(false)
+      expect(portal.accesosLoading).toBe(false)
+
+      fetchMisAccesos.mockResolvedValue([ACCESO])
+      await portal.loadAccesos()
+      expect(portal.accesosError).toBeNull()
+      expect(portal.accesos).toEqual([ACCESO])
+    })
+  })
+
+  describe('Mis sesiones', () => {
+    const SESION = { sistema: 'SGP', desde: '2026-05-10T15:04:05Z' }
+
+    it('loads the sesiones, and keeps an empty list as loaded (empty state)', async () => {
+      const portal = usePortalStore()
+      fetchMisSesiones.mockResolvedValue([SESION])
+      await portal.loadSesiones()
+      expect(portal.sesiones).toEqual([SESION])
+      expect(portal.sesionesLoaded).toBe(true)
+      expect(portal.sesionesError).toBeNull()
+
+      fetchMisSesiones.mockResolvedValue([])
+      await portal.loadSesiones()
+      expect(portal.sesiones).toEqual([])
+      expect(portal.sesionesLoaded).toBe(true)
+    })
+
+    it('reports a failed load (503) and clears it when a retry succeeds', async () => {
+      const portal = usePortalStore()
+      fetchMisSesiones.mockRejectedValue({
+        response: { status: 503, data: { error: 'hydra_unavailable' } },
+      })
+      await portal.loadSesiones()
+      expect(portal.sesionesError).toBe(
+        'No pudimos cargar la información. Intentá de nuevo en unos minutos.',
+      )
+      expect(portal.sesionesLoading).toBe(false)
+
+      fetchMisSesiones.mockResolvedValue([SESION])
+      await portal.loadSesiones()
+      expect(portal.sesionesError).toBeNull()
+    })
+
+    it('closes every session and reports success', async () => {
+      const portal = usePortalStore()
+      closeAllMySesiones.mockResolvedValue(true)
+
+      await expect(portal.closeAllSesiones()).resolves.toBe(true)
+
+      expect(closeAllMySesiones).toHaveBeenCalledTimes(1)
+      expect(portal.closingSesiones).toBe(false)
+      expect(portal.closeSesionesError).toBeNull()
+    })
+
+    it('reports a failed close (503) and keeps the list', async () => {
+      const portal = usePortalStore()
+      fetchMisSesiones.mockResolvedValue([SESION])
+      await portal.loadSesiones()
+      closeAllMySesiones.mockRejectedValue({
+        response: { status: 503, data: { error: 'hydra_unavailable' } },
+      })
+
+      await expect(portal.closeAllSesiones()).resolves.toBe(false)
+
+      expect(portal.closeSesionesError).toBe(
+        'No pudimos cerrar las sesiones. Intentá de nuevo en unos minutos.',
+      )
+      expect(portal.closingSesiones).toBe(false)
+      expect(portal.sesiones).toEqual([SESION])
+    })
   })
 })

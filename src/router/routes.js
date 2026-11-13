@@ -25,6 +25,9 @@ const routes = [
     children: [
       { path: 'sistemas', name: 'sistemas', component: () => import('pages/MisSistemasPage.vue') },
       { path: 'perfil', name: 'perfil', component: () => import('pages/MiPerfilPage.vue') },
+      { path: 'clave', name: 'clave', component: () => import('pages/CambiarClavePage.vue') },
+      { path: 'accesos', name: 'accesos', component: () => import('pages/MisAccesosPage.vue') },
+      { path: 'sesiones', name: 'sesiones', component: () => import('pages/MisSesionesPage.vue') },
     ],
   },
   {

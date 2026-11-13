@@ -156,6 +156,9 @@ const drawerOpen = ref(false)
 const menu = [
   { label: 'Mis sistemas', to: '/sistemas', icon: 'grid' },
   { label: 'Mi perfil', to: '/perfil', icon: 'user' },
+  { label: 'Cambiar mi clave', to: '/clave', icon: 'key' },
+  { label: 'Últimos accesos', to: '/accesos', icon: 'history' },
+  { label: 'Mis sesiones', to: '/sesiones', icon: 'monitor' },
 ]
 
 const name = computed(() => displayName(portal.perfil) || auth.name || '')
