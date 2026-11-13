@@ -17,7 +17,13 @@
         >
           <LineIcon name="menu" />
         </q-btn>
-        <img src="/escudo-mpp.jpg" alt="" width="32" height="32" class="portal-topbar__logo q-ml-sm" />
+        <img
+          src="/escudo-mpp.jpg"
+          alt=""
+          width="32"
+          height="32"
+          class="portal-topbar__logo q-ml-sm"
+        />
         <q-toolbar-title class="text-subtitle1 text-weight-bold"
           >Portal de Sistemas</q-toolbar-title
         >
